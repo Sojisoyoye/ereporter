@@ -28,6 +28,6 @@ export class CreateReportDto {
     @ApiProperty()
     readonly url: string;
 
-    @ApiProperty()
-    readonly companyId: string;
+    // @ApiProperty()
+    // readonly companyId: string;
 }

@@ -1,21 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Report } from './interfaces/report.interface';
+import { Report, ReportEntity } from './interfaces/report.interface';
 import { CreateReportDto } from './dto/create-report.dto';
+import { Company } from 'src/company/interfaces/company.interface';
 
 @Injectable()
 export class ReportService {
-    constructor(@InjectModel('Report') private readonly reportModel: Model<Report>) { }
+    constructor(
+        @InjectModel('Report')
+        private readonly reportModel: Model<Report>,
+        @InjectModel('Company')
+        private readonly companyModel: Model<Company>
+    ) { }
 
-    async createReport(createReportDto: CreateReportDto): Promise<Report> {
-        try {
-            const newCompany = new this.reportModel(createReportDto);
-            return await newCompany.save();
-        }
-        catch (err) {
-            throw new Error('report can not be created')
-        }
+    async createReport(companyId, createReportDto: CreateReportDto): Promise<Report> {
+        let company = await this.companyModel.findById(companyId).exec();
+
+        const newReport = new this.reportModel(createReportDto);
+        const report = await newReport.save();
+
+        company.reports.push(newReport);
+
+        await company.save();
+
+        return report;
     }
 
     async getAllReports(queryObj): Promise<Report[]> {
@@ -24,26 +33,9 @@ export class ReportService {
             .exec();
         return reports;
     }
+
+    async getReportsByCompany(option) {
+        const company = await this.companyModel.findOne(option).exec();
+        return { reports: company.reports };
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async getReports(options: object): Promise<Report> {
-    //     const reports = await this.reportModel.findOne(options).exec();
-    //     return reports;
-    // }

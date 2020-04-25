@@ -9,7 +9,7 @@ export class CompanyService {
     constructor(@InjectModel('Company') private readonly companyModel: Model<Company>) { }
 
     async getCompanyById(companyId): Promise<Company> {
-        const company = await this.companyModel.findById(companyId).exec();
+        const company = await this.companyModel.findById(companyId).populate('reports');
         return company;
     }
 
@@ -24,7 +24,7 @@ export class CompanyService {
     }
 
     async getAllCompanies(): Promise<Company[]> {
-        const companies = await this.companyModel.find().exec();
+        const companies = await this.companyModel.find().populate('reports');
         return companies;
     }
 }
