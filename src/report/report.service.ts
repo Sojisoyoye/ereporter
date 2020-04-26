@@ -37,22 +37,89 @@ export class ReportService {
         }
     }
 
-    async getAllReports(queryOption): Promise<any[]> {
-        const queryKey = Object.keys(queryOption)[0];
-        const queryValue = queryOption[queryKey];
-        const companyId = '_id';
+    async getAllReports(type, companyId, page: number = 1): Promise<any[]> {
         let queryObj = {};
+        let limit = 2;
+        let pageNo = (Math.abs(page) || 1) - 1;
 
-        if (queryKey === 'companyId') {
-            queryObj[companyId] = queryValue;
-            const reports = await this.companyModel.find(queryObj).populate('reports').select('reports -_id');
+        if (companyId) {
+            const reports = await this.companyModel
+                .find({ _id: companyId })
+                .populate({
+                    path: 'reports',
+                    options: {
+                        sort: {},
+                        skip: limit * pageNo,
+                        limit: limit
+                    }
+                })
+                .select('reports -_id')
+                .exec()
             return reports;
         }
 
-        queryObj = queryOption;
+        if (type) {
+            const reports = await this.reportModel
+                .find({ type: type })
+                .limit(limit)
+                .skip(limit * pageNo)
+                .sort({
+                    name: 'asc'
+                })
+                .exec();
+            return reports;
+        }
+
         const reports = await this.reportModel
             .find(queryObj)
+            .limit(limit)
+            .skip(limit * pageNo)
+            .sort({
+                name: 'asc'
+            })
             .exec();
         return reports;
+
     }
 }
+
+
+
+
+
+
+
+
+
+
+// const queryKey = Object.keys(queryOption)[0];
+        // const queryValue = queryOption[queryKey];
+        // const companyId = '_id';
+
+        // console.log(':::::::', Number(queryValue));
+        // let page: number = queryValue;
+        // console.log('>>>>>', page);
+
+
+
+        // queryObj = queryOption;
+
+
+
+
+// let limit = Math.abs(req.query.limit) || 10; 
+// let page = (Math.abs(req.query.page) || 1) - 1; 
+// Schema.find().limit(limit).skip(limit * page)
+
+// .populate([
+//     {
+//         path: 'reports',
+//         select: 'reports -_id',
+//         model: 'Report',
+//         options: {
+//             sort: {},
+//             skip: 5,
+//             limit: 1 - 1
+//         }
+//     }
+// ])

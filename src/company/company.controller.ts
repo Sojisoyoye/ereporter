@@ -31,4 +31,12 @@ export class CompanyController {
             company
         });
     }
+
+    @Get()
+    async getAllCompanies(@Res() res) {
+        const company = await this.companyService.getAllCompanies();
+        return res.status(HttpStatus.OK).json({
+            company
+        })
+    }
 }

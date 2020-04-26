@@ -24,8 +24,8 @@ export class ReportController {
     @ApiOperation({ summary: 'Get all reports and get reports by filter' })
     @ApiResponse({ status: 200, description: 'Returns reports.' })
     @Get()
-    async getReportByFilter(@Res() res, @Query() query) {
-        const reports = await this.reportService.getAllReports(query);
+    async getReportByFilter(@Res() res, @Query('page') page, @Query('type') type, @Query('companyId') companyId) {
+        const reports = await this.reportService.getAllReports(type, companyId, page);
         return res.status(HttpStatus.OK).json(reports);
     }
 }
