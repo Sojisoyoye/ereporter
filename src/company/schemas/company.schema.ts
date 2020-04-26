@@ -10,3 +10,7 @@ export const CompanySchema = new mongoose.Schema({
         ref: 'Report'
     }]
 })
+
+CompanySchema.virtual('companyId').get(function () {
+    return this._id;
+});

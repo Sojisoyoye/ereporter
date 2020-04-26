@@ -11,3 +11,17 @@ export interface Report extends Document {
     readonly url: string;
     readonly companyId: string;
 }
+
+export class ReportEntity {
+    constructor(
+        public name: string,
+        public type: string,
+        public period: string,
+        public year: number,
+        public assignee: string,
+        public deadline: Date,
+        public submitted: boolean,
+        public url: string,
+        public companyId: string
+    ) { }
+}

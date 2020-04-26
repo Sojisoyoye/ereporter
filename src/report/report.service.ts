@@ -1,49 +1,49 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Report } from './interfaces/report.interface';
+import { Report, ReportEntity } from './interfaces/report.interface';
 import { CreateReportDto } from './dto/create-report.dto';
+import { Company } from 'src/company/interfaces/company.interface';
+import { query } from 'express';
 
 @Injectable()
 export class ReportService {
-    constructor(@InjectModel('Report') private readonly reportModel: Model<Report>) { }
+    constructor(
+        @InjectModel('Report')
+        private readonly reportModel: Model<Report>,
+        @InjectModel('Company')
+        private readonly companyModel: Model<Company>
+    ) { }
 
-    async createReport(createReportDto: CreateReportDto): Promise<Report> {
-        try {
-            const newCompany = new this.reportModel(createReportDto);
-            return await newCompany.save();
-        }
-        catch (err) {
-            throw new Error('report can not be created')
-        }
+    async createReport(companyId, createReportDto: CreateReportDto): Promise<Report> {
+        let company = await this.companyModel.findById(companyId).exec();
+
+        const newReport = new this.reportModel(createReportDto);
+        const report = await newReport.save();
+
+        company.reports.push(newReport);
+
+        await company.save();
+
+        return report;
     }
 
-    async getAllReports(queryObj): Promise<Report[]> {
+    async getAllReports(queryOption): Promise<any[]> {
+        const queryKey = Object.keys(queryOption)[0];
+        const queryValue = queryOption[queryKey];
+        const companyId = '_id';
+        let queryObj = {};
+
+        if (queryKey === 'companyId') {
+            queryObj[companyId] = queryValue;
+            const reports = await this.companyModel.find(queryObj).populate('reports').select('reports -_id');
+            return reports;
+        }
+
+        queryObj = queryOption;
         const reports = await this.reportModel
             .find(queryObj)
             .exec();
         return reports;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async getReports(options: object): Promise<Report> {
-    //     const reports = await this.reportModel.findOne(options).exec();
-    //     return reports;
-    // }
