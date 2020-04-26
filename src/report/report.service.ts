@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Report, ReportEntity } from './interfaces/report.interface';
+import { Report } from './interfaces/report.interface';
 import { CreateReportDto } from './dto/create-report.dto';
 import { Company } from 'src/company/interfaces/company.interface';
-import { query } from 'express';
+import { HttpException } from '@nestjs/common/exceptions/http.exception';
 
 @Injectable()
 export class ReportService {
@@ -16,16 +16,25 @@ export class ReportService {
     ) { }
 
     async createReport(companyId, createReportDto: CreateReportDto): Promise<Report> {
-        let company = await this.companyModel.findById(companyId).exec();
+        try {
+            let company = await this.companyModel.findById(companyId).exec();
 
-        const newReport = new this.reportModel(createReportDto);
-        const report = await newReport.save();
+            const newReport = new this.reportModel(createReportDto);
+            const report = await newReport.save();
 
-        company.reports.push(newReport);
+            company.reports.push(newReport);
 
-        await company.save();
+            await company.save();
 
-        return report;
+            return report;
+        }
+        catch (err) {
+            if (err.name === 'ValidationError') {
+                throw new HttpException({ message: 'Bad request', error: err }, HttpStatus.BAD_REQUEST)
+            }
+
+            throw new HttpException({ message: 'Server error', error: err }, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getAllReports(queryOption): Promise<any[]> {

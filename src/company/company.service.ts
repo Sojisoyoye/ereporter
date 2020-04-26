@@ -13,11 +13,6 @@ export class CompanyService {
         return company;
     }
 
-    // async getCompany(options): Promise<Company> {
-    //     const company = await this.companyModel.findOne(options).exec();
-    //     return company;
-    // }
-
     async createCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
         const newCompany = new this.companyModel(createCompanyDto);
         return await newCompany.save();

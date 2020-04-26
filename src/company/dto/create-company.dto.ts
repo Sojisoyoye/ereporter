@@ -1,21 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty } from "class-validator";
 
 export class CreateCompanyDto {
     @ApiProperty()
-    readonly _id: number;
-
-    @ApiProperty()
+    @IsNotEmpty()
     readonly name: string;
 
     @ApiProperty()
+    @IsNotEmpty()
     readonly address: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsEmail()
     readonly email: string;
 
     @ApiProperty()
+    @IsNotEmpty()
     readonly description: string;
-
-    @ApiProperty()
-    readonly reports: any;
 }
