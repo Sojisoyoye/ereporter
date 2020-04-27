@@ -1,4 +1,4 @@
-import { Controller, Get, Res, HttpStatus, Post, Body, NotFoundException, Param, Query, UsePipes } from '@nestjs/common';
+import { Controller, Get, Res, HttpStatus, Post, Body, NotFoundException, Param, Query, UsePipes, HttpException } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
@@ -12,13 +12,21 @@ export class CompanyController {
 
     @ApiOperation({ summary: 'Gets a company' })
     @ApiResponse({ status: 200, description: 'Returns a company.' })
+    @ApiResponse({ status: 404, description: 'The company is not available.' })
     @Get(':companyId')
     async getCompany(@Res() res, @Param('companyId', new ValidateObjectId()) companyId) {
-        const company = await this.companyService.getCompanyById(companyId);
-        if (!company) {
-            throw new NotFoundException('Company does not exist!');
+        try {
+            const company = await this.companyService.getCompanyById(companyId);
+            if (!company) {
+                return res.status(HttpStatus.NOT_FOUND).json({
+                    message: 'This company is not available',
+                    status: HttpStatus.NOT_FOUND
+                });
+            }
+            return res.status(HttpStatus.OK).json(company);
+        } catch (err) {
+            throw new HttpException({ message: 'Server error', error: err }, HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        return res.status(HttpStatus.OK).json(company);
     }
 
     @ApiOperation({ summary: 'Create company' })
@@ -26,10 +34,15 @@ export class CompanyController {
     @Post()
     @UsePipes(new ValidationPipe())
     async createCompany(@Res() res, @Body() createCompanyDto: CreateCompanyDto) {
-        const company = await this.companyService.createCompany(createCompanyDto);
-        return res.status(HttpStatus.OK).json({
-            company
-        });
+        try {
+            const company = await this.companyService.createCompany(createCompanyDto);
+            return res.status(HttpStatus.OK).json({ statidId: company.id });
+        } catch (err) {
+            if (err.name === 'ValidationError') {
+                throw new HttpException({ message: 'Bad request', error: err }, HttpStatus.BAD_REQUEST)
+            }
+            throw new HttpException({ message: 'Server error', error: err }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Get()
