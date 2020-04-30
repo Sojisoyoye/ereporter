@@ -1,18 +1,23 @@
-version: '3.7'
+version: "3"
 services:
-  ereporter:
-    container_name: ereporter
+  back_app:
+    depends_on:
+      - db
     restart: always
     build: .
     ports:
-      - "3000:3000"
-    links:
-      - mongo
-    
-  mongo:
-    container_name: mongo
-    image: mongo
+      - "8080:3000"
     volumes:
-      - ./data:/data/db
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      
+  db:
+    image: mongo
+    container_name: db
+    volumes:
+      - mongodata:/data/db
     ports:
       - "27017:27017"
+
+volumes:
+  mongodata: 
