@@ -1,7 +1,7 @@
 
   ## Description
 
-** Application features
+### Application features
 
 >- can create a new company with POST api/companies
 >- can get a single company with api/companies/:companyId
