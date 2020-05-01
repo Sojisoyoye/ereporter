@@ -23,7 +23,9 @@ export class CompanyController {
                     status: HttpStatus.NOT_FOUND
                 });
             }
-            return res.status(HttpStatus.OK).json(company);
+            return res.status(HttpStatus.OK).json({
+                data: [company]
+            });
         } catch (err) {
             throw new HttpException({ message: 'Server error', error: err }, HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -49,7 +51,7 @@ export class CompanyController {
     async getAllCompanies(@Res() res) {
         const company = await this.companyService.getAllCompanies();
         return res.status(HttpStatus.OK).json({
-            company
+            data: company
         })
     }
 }

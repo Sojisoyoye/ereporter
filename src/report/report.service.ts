@@ -29,7 +29,7 @@ export class ReportService {
 
     async getAllReports(type, companyId, page: number = 1): Promise<any[]> {
         let queryObj = {};
-        let limit = 2;
+        let limit = 5;
         let pageNo = (Math.abs(page) || 1) - 1;
 
         if (companyId) {
