@@ -3,12 +3,41 @@
 
 ### Application features
 
-- can create a new company with POST api/companies
-- can get a single company with api/companies/:companyId
-- can create a new report with POST api/reports/:companyId
-- can get a list of all reports with GET api/reports
-- can get a list of reports of type 'X' with GET api/reports?type=X
-- can get a list of reports of company 'Y' with GET api/reports?companyId=Y
+- can create a new company with POST /api/companies
+- can get a single company with /api/companies/:companyId
+- can create a new report with POST /api/reports/:companyId
+- can get a list of all reports with GET /api/reports
+- can get a list of reports of type 'X' with GET /api/reports?type=X
+- can get a list of reports of company 'Y' with GET /api/reports?companyId=Y
+- can get a list of reports with pagination with /api/reports?page=2
+
+## Request body
+
+- To create company 
+
+```
+{
+  name: "string",
+  address: "string",
+  email: "string",
+  description: "string"
+}
+```
+
+- To create report
+
+```
+{
+  name: "string",
+  type: "string",
+  period: "string",
+  year: number,
+  assignee: "string",
+  deadline: "2020-05-01T06:55:41.872Z",
+  submitted: boolean,
+  url: "string"
+}
+```
 
 ### Technologies Used
 
@@ -31,9 +60,17 @@
 npm run init
 ```
 
-Visit your browser in: `http://localhost:8080/`
+### To stop the server
+
+- Press Control + C
+- then run
+```
+npm run stop:init
+```
 
 ### App Documentation
+
+Visit your browser in:
 
 `http://localhost:8080/api/docs`
 
@@ -55,9 +92,9 @@ $ npm run start
 # watch mode
 $ npm run start:dev
 ```
-Visit your browser in: `http://localhost:3000/`
 
 ### App Documentation
+Visit your browser in:
 
 `http://localhost:3000/api/docs`
 
