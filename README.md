@@ -52,7 +52,17 @@
 - Node (>= 8.9.0)
 - Docker
 
+## Installation
+
+- Install [**Node JS**](https://nodejs.org/en)
+- Install [**Nest JS**](https://nestjs.com/)
+- Clone this repository[**repository here**](https://gitlab.com/Sojisoyoye/ereporter)
+- [**cd**] into the root of the **project directory**
+- Run `npm install` on the terminal to install project dependencies
+
 ## How to run the application with docker-compose
+
+- To run the application with docker you will need to install Docker
 
 ### Run
 
